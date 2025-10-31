@@ -20,6 +20,14 @@ apps:
     command: usr/bin/todo-list
     desktop: usr/share/applications/todo-list.desktop
     extensions: [gnome]
+    plugs:
+      - network
+      - desktop
+      - desktop-legacy
+      - gsettings
+      - opengl
+      - wayland
+      - x11
 
 package-repositories:
   - type: apt
@@ -48,7 +56,8 @@ parts:
     stage-packages:
       - libwebkit2gtk-4.1-0
       - libayatana-appindicator3-1
-    source: .
+    source: https://github.com/vhgcuong/todo-list.git
+    source-type: git
     override-build: |
       set -eu
       npm install
