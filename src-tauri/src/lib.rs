@@ -1,12 +1,6 @@
 // Learn more about Tauri commands at https://tauri.app/develop/calling-rust/
 use rusqlite::{Connection, Result, Error};
-
-
-#[derive(Debug)]
-struct Todo {
-    is_done: bool,
-    text: String
-}
+pub mod models;
 
 #[tauri::command]
 fn get_todo() -> Vec<Todo> {
