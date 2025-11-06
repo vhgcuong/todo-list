@@ -1,20 +1,15 @@
 <script setup lang="ts">
-const model = defineModel<{ text: string; isDone: boolean }>({
-  default: { text: '', isDone: true }
-});
+import {Todo} from "../types/models.ts";
+
+const { todo } = defineProps<{
+  todo: Todo
+}>()
 </script>
 
 <template>
-  <label>
-    <div>
-      <input type="checkbox" class="appearance-none forced-colors:appearance-auto" :checked="model.isDone"/>
-      <svg class="invisible peer-checked:visible forced-colors:hidden">
-      </svg>
+    <div >
+      <input type="checkbox" class=" " :checked="todo.is_done"/>
+
+    {{ todo.text }}
     </div>
-    {{ model.text }}
-  </label>
 </template>
-
-<style scoped>
-
-</style>
