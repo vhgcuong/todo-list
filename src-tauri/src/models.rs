@@ -1,19 +1,20 @@
-#[derive(Debug)]
+use serde::Serialize;
+
+#[derive(Debug, Default, Serialize)]
 pub struct Todo {
     pub id: i32,
     pub text: String,
-    pub is_done: bool
+    pub is_done: bool,
 }
 
 impl Todo {
-    pub fn set(id: i32, text: &str, is_done: bool) -> Self {
+    pub fn new(text: &str, is_done: &bool) -> Self {
         Self {
-            id,
+            id: 0,
             text: text.to_string(),
-            is_done,
+            is_done: *is_done,
         }
     }
-
     pub fn mark_done(&mut self) {
         self.is_done = true;
     }

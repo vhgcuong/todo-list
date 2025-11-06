@@ -1,35 +1,17 @@
 // Learn more about Tauri commands at https://tauri.app/develop/calling-rust/
-use rusqlite::{Connection, Result, Error};
-pub mod models;
-
-#[tauri::command]
-fn get_todo() -> Vec<Todo> {
-    vec![]
-}
-
-fn create_database() -> Result<()> {
-    let conn = Connection::open("app_database.db")?;
-
-    conn.execute(
-        "CREATE TABLE IF NOT EXISTS todos (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            text TEXT NOT NULL,
-            is_done BOOL DEFAULT FALSE
-        )",
-        [], // No parameters needed
-    )?;
-
-    println!("Database and table created successfully.");
-    Ok(())
-}
+use rusqlite::{Result, Connection};
+mod commands;
+mod models;
+mod db;
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
-pub fn run() -> Result<(), Error> {
-    create_database()?;
-
+pub fn run() -> Result<()> {
     tauri::Builder::default()
         .plugin(tauri_plugin_opener::init())
-        // .invoke_handler(tauri::generate_handler![])
+        .manage(db::Db(std::sync::Mutex::new(
+            Connection::open("app_database.db").unwrap(),
+        )))
+        .invoke_handler(tauri::generate_handler![commands::todos])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
 
