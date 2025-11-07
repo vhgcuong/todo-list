@@ -18,8 +18,8 @@ onMounted(() => {
 </script>
 
 <template>
-  <div class="rounded-sm m-8">
-      <todo-item v-for="(todo, index) in todos" :key="todo.id" :todo="todos[index]"/>
+  <div class="rounded-sm pt-2 flex-1">
+    <todo-item v-for="(todo, index) in todos" :key="todo.id" :todo="todos[index]"/>
   </div>
 </template>
 
