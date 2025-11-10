@@ -50,19 +50,19 @@ pub fn todos(db: State<Db>) -> Result<Vec<Todo>, String> {
 //     }
 // }
 
-// #[tauri::command]
-// pub fn update_todo(todo: &Todo) -> bool {
-//     let conn = Connection::open("app_database.db")?;
-//
-//     match conn.execute("UPDATE todos SET text = :text, is_done = :is_done WHERE id = :id",
-//                        &[(":text", &todo.text), (":is_done", &todo.is_done.to_string()), (":id", &todo.id.to_string())]) {
-//         Ok(_) => {
-//             println!("Updated.");
-//             true
-//         }
-//         Err(err) => {
-//             println!("Error: {:?}", err);
-//             false
-//         }
-//     }
-// }
+#[tauri::command]
+pub fn change_done(db: State<Db>, is_done: bool, id: i32) -> bool {
+    let conn = db.0.lock().unwrap();
+    let is_done_int = if is_done { 1 } else { 0 };
+    match conn.execute("UPDATE todos SET is_done = ?1 WHERE id = ?2",
+                       [is_done_int, id]) {
+        Ok(_) => {
+            println!("Updated.");
+            true
+        }
+        Err(err) => {
+            println!("Error: {:?}", err);
+            false
+        }
+    }
+}
