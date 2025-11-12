@@ -8,16 +8,6 @@ pub fn todos(db: State<Db>) -> Result<Vec<Todo>, String> {
 
     let mut stmt = conn.prepare("SELECT id, text, is_done FROM todos")
         .map_err(|e| e.to_string())?;
-    // let mut rows = stmt.query([])?;
-
-    // let mut todos = Vec::new();
-    //
-    // while let Some(row) = rows.next()? {
-    //     let id: i32 = row.get(0)?;
-    //     let text: String = row.get(1)?;
-    //     let is_done: bool = row.get(2)?;
-    //     todos.push(Todo {id, text, is_done})
-    // }
 
     let todos_iter = stmt.query_map([], |row| {
         Ok(Todo {
@@ -33,36 +23,25 @@ pub fn todos(db: State<Db>) -> Result<Vec<Todo>, String> {
     Ok(todos)
 }
 
-// #[tauri::command]
-// pub fn create_todo(todo: &Todo) -> bool {
-//     let conn = Connection::open("app_database.db")?;
-//
-//     match conn.execute("INSERT INTO todos (text, is_done) VALUES (:text, :is_done)",
-//                        &[(":text", &todo.text), (":is_done", &todo.is_done.to_string())]) {
-//         Ok(_) => {
-//             println!("Created.");
-//             true
-//         }
-//         Err(err) => {
-//             println!("Error: {:?}", err);
-//             false
-//         }
-//     }
-// }
-
 #[tauri::command]
-pub fn change_done(db: State<Db>, is_done: bool, id: i32) -> bool {
-    let conn = db.0.lock().unwrap();
-    let is_done_int = if is_done { 1 } else { 0 };
-    match conn.execute("UPDATE todos SET is_done = ?1 WHERE id = ?2",
-                       [is_done_int, id]) {
-        Ok(_) => {
-            println!("Updated.");
-            true
+pub fn change_status(db: State<Db>, status: bool, id: i32) -> Result<bool, String> {
+    let conn = match db.0.lock() {
+        Ok(c) => c,
+        Err(e) => {
+            println!("DB lock error: {:?}", e);
+            return Err(e.to_string());
         }
+    };
+    let status_int = if status { 1 } else { 0 };
+    println!("todo: {} change status: {}", id, status_int);
+    match conn.execute("UPDATE todos SET is_done = ?1 WHERE id = ?2", [status_int, id]) {
+        Ok(_) => {
+            println!("Updated {}.", id);
+            Ok(true)
+        },
         Err(err) => {
             println!("Error: {:?}", err);
-            false
+            Err(format!("Error: {:?}", err))
         }
     }
 }

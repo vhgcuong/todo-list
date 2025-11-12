@@ -9,9 +9,9 @@ pub fn run() -> Result<()> {
     tauri::Builder::default()
         .plugin(tauri_plugin_opener::init())
         .manage(db::Db(std::sync::Mutex::new(
-            Connection::open("app_database.db").unwrap(),
+            Connection::open("../app_database.db").unwrap(),
         )))
-        .invoke_handler(tauri::generate_handler![commands::todos, commands::change_done])
+        .invoke_handler(tauri::generate_handler![commands::todos, commands::change_status])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
 

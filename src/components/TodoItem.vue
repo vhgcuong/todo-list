@@ -12,11 +12,11 @@ const name = 'check_' + todo.id;
 
 const active = ref(todo.is_done);
 
-async function change(value) {
+async function change(value: boolean) {
   active.value = !value;
 
   if (todo?.id) {
-    await changeDone(active.value, todo?.id);
+    await changeDone(active.value, todo?.id).then((value) => console.log(value));
   }
 }
 
