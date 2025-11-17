@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import {onMounted, ref} from "vue";
-import {invoke} from "@tauri-apps/api/core";
 import TodoItem from "./TodoItem.vue";
 import {Todo} from "../types/models.ts";
 import {fetchAll} from "../api/todo.ts";
