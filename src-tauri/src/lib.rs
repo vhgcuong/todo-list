@@ -11,7 +11,11 @@ pub fn run() -> Result<()> {
         .manage(db::Db(std::sync::Mutex::new(
             Connection::open("../app_database.db").unwrap(),
         )))
-        .invoke_handler(tauri::generate_handler![commands::todos, commands::change_status])
+        .invoke_handler(tauri::generate_handler![
+            commands::todos,
+            commands::change_status,
+            commands::add
+        ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
 
