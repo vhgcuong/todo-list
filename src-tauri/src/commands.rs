@@ -24,6 +24,32 @@ pub fn todos(db: State<Db>) -> Result<Vec<Todo>, String> {
 }
 
 #[tauri::command]
+pub fn add(db: State<Db>, status: bool, text: &str) -> Result<Todo, String> {
+    let conn = match db.0.lock() {
+        Ok(c) => c,
+        Err(e) => {
+            println!("DB lock error: {:?}", e);
+            return Err(e.to_string());
+        }
+    };
+    let status_int = if status { 1 } else { 0 };
+
+    println!("Insert: {}, {}", text, status_int);
+    conn.execute("INSERT INTO todos (is_done, text) VALUES (?1, ?2)", [status_int, text])?;
+
+    let mut stmt = conn.prepare("SELECT id, text, is_done FROM todos")?;
+    let todo_iter = stmt.query_map([], |row| {
+        Ok(Todo {
+            id: row.get(0)?,
+            text: row.get(1)?,
+            is_done: row.get(2)?,
+        })
+    })?;
+
+    todo_iter
+}
+
+#[tauri::command]
 pub fn change_status(db: State<Db>, status: bool, id: i32) -> Result<bool, String> {
     let conn = match db.0.lock() {
         Ok(c) => c,
